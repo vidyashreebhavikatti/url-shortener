@@ -1,0 +1,5 @@
+[project]
+name = "url-shortener"
+version = "0.1.0"
+description = "Production-ready URL Shortener built with FastAPI"
+requires-python = ">=3.11"

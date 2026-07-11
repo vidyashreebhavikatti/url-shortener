@@ -16,7 +16,7 @@ class URL(Base):
         nullable = False,
     )
 
-    short_url = Column(
+    short_code = Column(
         String(10),
         unique = True,
         nullable = False,

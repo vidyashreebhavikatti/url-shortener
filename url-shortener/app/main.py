@@ -5,6 +5,9 @@ Application entry point.
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_301_MOVED_PERMANENTLY
+from app.logging import logger
+from app.models import urls
 
 from app.config import settings
 from app.crud import (
@@ -27,14 +30,17 @@ app = FastAPI(
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+logger.info("Health check endpoint called")
 
 
 @app.post("/shorten", response_model=URLResponse)
-def shorten_url(
+def short_code(
     url: URLCreate,
     db: Session = Depends(get_db),
 ):
     return create_short_url(db, url)
+logger.info(f"Creating short URL for {urls.original_url}")
+logger.info(f"Redirecting {short_code}")
 
 
 @app.get("/{short_code}")
@@ -52,4 +58,7 @@ def redirect_url(
 
     increment_click_count(db, db_url)
 
-    return RedirectResponse(db_url.original_url)
+    return RedirectResponse(
+    url=db_url.original_url,
+    status_code=HTTP_301_MOVED_PERMANENTLY,
+)
